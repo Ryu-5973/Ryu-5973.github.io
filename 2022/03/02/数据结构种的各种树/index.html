@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.0.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/web-icon32.svg">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/web-icon16.svg">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="数据结构中的各种树众所周知，树是数据结构中很重要的一个部分，我们平常的编程设计中也经常用到，比如STL底层的map, multimap, set, multiset部分的底层就用到了红黑树，priority_queue用到了完全二叉树，树是一种特殊的图，有向无环图，除了根节点其他节点入度都为1，这篇博客的主要内容主要讲解“几棵”很有意思的树。 BST和AVL树BST我们都知道，在一个有序序列中，我">
+<meta property="og:type" content="article">
+<meta property="og:title" content="数据结构种的各种树">
+<meta property="og:url" content="http://example.com/2022/03/02/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E7%A7%8D%E7%9A%84%E5%90%84%E7%A7%8D%E6%A0%91/index.html">
+<meta property="og:site_name" content="RyusBlog">
+<meta property="og:description" content="数据结构中的各种树众所周知，树是数据结构中很重要的一个部分，我们平常的编程设计中也经常用到，比如STL底层的map, multimap, set, multiset部分的底层就用到了红黑树，priority_queue用到了完全二叉树，树是一种特殊的图，有向无环图，除了根节点其他节点入度都为1，这篇博客的主要内容主要讲解“几棵”很有意思的树。 BST和AVL树BST我们都知道，在一个有序序列中，我">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/2022/03/02/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E7%A7%8D%E7%9A%84%E5%90%84%E7%A7%8D%E6%A0%91/images/5/1.png">
+<meta property="article:published_time" content="2022-03-02T09:31:26.000Z">
+<meta property="article:modified_time" content="2022-03-02T09:59:30.858Z">
+<meta property="article:author" content="Ryu">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/2022/03/02/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E7%A7%8D%E7%9A%84%E5%90%84%E7%A7%8D%E6%A0%91/images/5/1.png">
+
+<link rel="canonical" href="http://example.com/2022/03/02/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E7%A7%8D%E7%9A%84%E5%90%84%E7%A7%8D%E6%A0%91/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>数据结构种的各种树 | RyusBlog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">RyusBlog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2022/03/02/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E7%A7%8D%E7%9A%84%E5%90%84%E7%A7%8D%E6%A0%91/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Ryu">
+      <meta itemprop="description" content="十年饮冰，难凉热血">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="RyusBlog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          数据结构种的各种树
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2022-03-02 17:31:26 / 修改时间：17:59:30" itemprop="dateCreated datePublished" datetime="2022-03-02T17:31:26+08:00">2022-03-02</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="数据结构中的各种树"><a href="#数据结构中的各种树" class="headerlink" title="数据结构中的各种树"></a>数据结构中的各种树</h1><p>众所周知，树是数据结构中很重要的一个部分，我们平常的编程设计中也经常用到，比如STL底层的map, multimap, set, multiset部分的底层就用到了红黑树，priority_queue用到了完全二叉树，树是一种特殊的图，有向无环图，除了根节点其他节点入度都为1，这篇博客的主要内容主要讲解“几棵”很有意思的树。</p>
+<h2 id="BST和AVL树"><a href="#BST和AVL树" class="headerlink" title="BST和AVL树"></a>BST和AVL树</h2><h3 id="BST"><a href="#BST" class="headerlink" title="BST"></a>BST</h3><p>我们都知道，在一个有序序列中，我们要查找一个元素，用二分的方法就能解决，时间复杂度的大小为*O(logn)*，具体过程如下：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 有序序列arr查找元素4, 左指针l，右指针r，中间指针mid</span></span><br><span class="line">arr: 	|<span class="number">1</span>	<span class="number">3</span>  <span class="number">4</span>  <span class="number">5</span>  <span class="number">7</span>	<span class="number">8</span>  <span class="number">9</span>  <span class="number">11</span>  <span class="number">23</span>|		l = <span class="number">0</span>, r = <span class="number">8</span>, mid = <span class="number">4</span>, arr[mid] &gt; <span class="number">4</span>, r = mid - <span class="number">1</span></span><br><span class="line">arr:	|<span class="number">1</span>  <span class="number">3</span>  <span class="number">4</span>  <span class="number">5</span>| <span class="number">7</span>  <span class="number">8</span>  <span class="number">9</span>  <span class="number">11</span>  <span class="number">23</span>		l = <span class="number">0</span>, r = <span class="number">3</span>, mid = <span class="number">1</span>, arr[mid] &lt; <span class="number">4</span>, l = mid + <span class="number">1</span></span><br><span class="line">arr:	 <span class="number">1</span>  <span class="number">3</span> |<span class="number">4</span>  <span class="number">5</span>| <span class="number">7</span>  <span class="number">8</span>  <span class="number">9</span>  <span class="number">11</span>  <span class="number">23</span>		l = <span class="number">2</span>, r = <span class="number">3</span>, mid = <span class="number">2</span>, arr[mid] == <span class="number">4</span>, 查找结束</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">bool</span> <span class="title">search</span><span class="params">(<span class="keyword">const</span> vetor&lt;<span class="keyword">int</span>&gt; &amp;arr, <span class="keyword">int</span> val)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">int</span> l = <span class="number">0</span>, r = arr.<span class="built_in">size</span>() - <span class="number">1</span>;</span><br><span class="line">    <span class="keyword">while</span>(l &lt;= r) &#123;</span><br><span class="line">        <span class="keyword">int</span> mid = (l + r) / <span class="number">2</span>;</span><br><span class="line">        <span class="keyword">if</span>(arr[mid] == val) <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">        <span class="keyword">if</span>(arr[mid] &lt; val) l = mid + <span class="number">1</span>;</span><br><span class="line">        <span class="keyword">else</span> r = mid - <span class="number">1</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>我们可以看出每一次筛选都可以过滤掉一半元素，和我们二叉树的左右子树很相似，因此就有了下面的二叉查找树（BST）：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">       7</span><br><span class="line">     /   \</span><br><span class="line">   3       9</span><br><span class="line"> /   \   /   \</span><br><span class="line">1     4 8     11</span><br><span class="line">       \        \</span><br><span class="line">         5        23</span><br></pre></td></tr></table></figure>
+
+<p>二叉查找树有一个特点就是所有节点的左子树的最大值小于等于该节点的值，右子树的最小值大于等于该节点的值。这就意味这我们可以在遍历过程中筛选出掉一半元素。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment">struct tree&#123;</span></span><br><span class="line"><span class="comment">    int val;</span></span><br><span class="line"><span class="comment">    tree *left;</span></span><br><span class="line"><span class="comment">    tree *right;</span></span><br><span class="line"><span class="comment">&#125;;</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">bool</span> <span class="title">search</span><span class="params">(tree *t, <span class="keyword">int</span> val)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span>(t == <span class="literal">nullptr</span>) <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">    <span class="keyword">if</span>(t-&gt;val == val)<span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">    <span class="keyword">if</span>(t-&gt;val &gt; val) <span class="keyword">return</span> <span class="built_in">search</span>(t-&gt;left, val);</span><br><span class="line">    <span class="keyword">else</span> <span class="keyword">return</span> <span class="built_in">search</span>(t-&gt;right, val);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>相比两份代码，其实核心部分都是一样的，比较筛选，而且筛选掉一半。</p>
+<p>这看起来貌似二叉查找树作为我们存储数据的底层结构似乎非常完美，插入删除查找的复杂度貌似都是”<em>O(logn)</em>“?其实并不是，在某种极端条件下，二叉查找树的查找能力非常糟糕。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">// 我们按顺序插入一下元素 1 2  3 4 5 6 7 8</span><br><span class="line">得到的二叉查找树如下</span><br><span class="line">		1</span><br><span class="line">		 \</span><br><span class="line">		  2</span><br><span class="line">		   \</span><br><span class="line">		    3 </span><br><span class="line">		     \</span><br><span class="line">		      4</span><br><span class="line">		       \</span><br><span class="line">		        5</span><br><span class="line">		         \</span><br><span class="line">		          6</span><br><span class="line">		           \</span><br><span class="line">		            7</span><br><span class="line">		             \</span><br><span class="line">		              8</span><br></pre></td></tr></table></figure>
+
+<p>这还是一棵二叉查找树吗？是的，虽然很离谱，但他就是一棵二叉查找树，这种情况下的查找复杂度是*O(n)*，这是不能忍受的，所以我们要引入二叉查找树插入优化后的树——B树。</p>
+<h3 id="AVL树"><a href="#AVL树" class="headerlink" title="AVL树"></a>AVL树</h3><p>为了避免上诉的这种情况（及其不平衡的BST），我们引入了平衡二叉树（AVL树），在插入和删除的过程中对树的平衡因子进行严格控制，平衡二叉树中每个结点的左右子树的高度差不大于1，如何调整则是一个大问题，具体的旋转类型有LL旋转，LR旋转、RR旋转、RL旋转</p>
+<p><strong>LL旋转</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">            5                                   5</span><br><span class="line">          /   \                               /   \</span><br><span class="line">        4       6                           3        6</span><br><span class="line">      /                                   /   \</span><br><span class="line">    3                                   2       4</span><br><span class="line">  / </span><br><span class="line">2</span><br></pre></td></tr></table></figure>
+
+<p>插入2后明显4结点不平衡了，从4开始寻找2发现位置为左子树的左子树，所以类型为LL旋转</p>
+<p><strong>LR旋转</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">        5                    5</span><br><span class="line">      /   \                /   \</span><br><span class="line">    4       6            3       6</span><br><span class="line">  /                   /      \    </span><br><span class="line">2                    2        4</span><br><span class="line">  \</span><br><span class="line">    3</span><br></pre></td></tr></table></figure>
+
+<p>插入3后明显4结点不平衡了，从4开始寻找3发现位置为左子树的右子树，所以类型为LR旋转</p>
+<p><strong>RR旋转</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">    2                                    2</span><br><span class="line">  /   \                                /   \</span><br><span class="line">1       3                            1      4</span><br><span class="line">          \                               /   \</span><br><span class="line">            4                           3       5</span><br><span class="line">              \</span><br><span class="line">                5</span><br></pre></td></tr></table></figure>
+
+<p>插入5后明显3结点不平衡了，从3开始寻找5发现位置为右子树的右子树，所以类型为RR旋转</p>
+<p><strong>RL旋转</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">    2                                    2</span><br><span class="line">  /   \                                /   \</span><br><span class="line">1       3                            1        4</span><br><span class="line">          \                                 /   \</span><br><span class="line">           5                              3       5</span><br><span class="line">          /</span><br><span class="line">        4</span><br></pre></td></tr></table></figure>
+
+<p>插入4后明显3结点不平衡了，从3开始寻找4发现位置为右子树的左子树，所以类型为RL旋转</p>
+<p><strong>旋转方法</strong></p>
+<p>方法与旋转类型无关。且一种方法就可应对四种旋转类型。</p>
+<p><strong>从失衡点开始，经过两步“寻找”，则必然遇到两个结点。加上失衡点，总共三个结点。假设为A、B、C，并规定A&lt;B&lt;C。将这三个结点单独拿出来。把其中的“中位数”B作为根结点，A作为B的左子树，C作为B的右子树，构建一个新的平衡二叉树。并将该新树的根B放到原来的失衡点上。其中，A和C的子树不动。【当B原来的左子树根≠A时，把它接到A的右边。当B原来的右子树根≠C时，把它接到C的左边。】</strong></p>
+<p>具体的旋转例子如上所示。</p>
+<p>AVL的平衡条件非常严格，只要插入或删除不满足上面的条件就要通过旋转来保持平衡。由于旋转是非常耗费时间的，所以AVL树只适合用于插入删除次数比较少，但查找多的情况。</p>
+<h2 id="红黑树"><a href="#红黑树" class="headerlink" title="红黑树"></a>红黑树</h2><p>下面介绍的更是一种重量级数据结构——红黑树，STL底层的map和set系列用的就是红黑树。红黑树具有良好的效率，它可在 O(logN) 时间内完成查找、增加、删除等操作。</p>
+<h3 id="红黑树的性质"><a href="#红黑树的性质" class="headerlink" title="红黑树的性质"></a>红黑树的性质</h3><ul>
+<li>节点是红色或黑色。</li>
+<li>根是黑色。</li>
+<li>所有叶子都是黑色（叶子是NIL节点）。</li>
+<li>每个红色节点必须有两个黑色的子节点。（从每个叶子到根的所有路径上不能有两个连续的红色节点。）</li>
+<li>从任一节点到其每个叶子的所有简单路径都包含相同数目的黑色节点（简称黑高）</li>
+</ul>
+<p>可以看出，相比AVL，红黑树的平衡要求降低了，这也同时降低了插入和删除的难度，但效率还是有着较好的保持。</p>
+<h3 id="旋转操作"><a href="#旋转操作" class="headerlink" title="旋转操作"></a>旋转操作</h3><p>旋转操作分左旋和右旋，比较好理解：</p>
+<p><img src="./images/5/1.png"></p>
+<h3 id="插入操作"><a href="#插入操作" class="headerlink" title="插入操作"></a>插入操作</h3><p>插入操作和AVL的过程基本相似，且插入结点的元素默认为红色，因为黑色注定会破坏红黑树的平衡，而红色就不一定，比较好调节。但插入红色可能会使第四条规定被破坏，此时需要调整。</p>
+<p>我们假设添加结点为N，N的父结点为P，P的父节点为G，P的兄弟结点为U</p>
+<h4 id="情况1"><a href="#情况1" class="headerlink" title="情况1"></a>情况1</h4><p>插入结点为根节点，此时直接将结点变黑即可。</p>
+<h4 id="情况2"><a href="#情况2" class="headerlink" title="情况2"></a>情况2</h4><p>P为黑色，此时平衡没被破坏，不用调整</p>
+<h4 id="情况3"><a href="#情况3" class="headerlink" title="情况3"></a>情况3</h4><p>P为红色，U为红色，此时对P、U、G均进行变色，但此时可能G的变色（黑-&gt;红）可能会引发冲突，需要继续向上调整</p>
+<h4 id="情况4"><a href="#情况4" class="headerlink" title="情况4"></a>情况4</h4><p>P为红色，U为黑色，N为P左子，P为G左子时（LL型），对G进行右旋，P、G互换颜色。</p>
+<p>这里可能会有些奇怪，那LR、RL、RR这么调整呢？</p>
+<p>对于RR，则执行与LL想法的操作</p>
+<p>对于LR、RL则要对P进行左旋/右旋转换为LL/RR型</p>
+<h2 id="B树B-树"><a href="#B树B-树" class="headerlink" title="B树B+树"></a>B树B+树</h2><h3 id="B树"><a href="#B树" class="headerlink" title="B树"></a>B树</h3><p>B树也称B-树，它是一棵多路平衡查找树，对于一棵n阶B树有如下定义：</p>
+<ul>
+<li><p>每个节点最多有n-1个<strong>关键字</strong>（可以存有的键值对）。</p>
+</li>
+<li><p>根节点最少可以只有1个<strong>关键字</strong>。</p>
+</li>
+<li><p>非根节点至少有n/2个<strong>关键字</strong>。</p>
+</li>
+<li><p>每个节点中的关键字都按照从小到大的顺序排列，每个关键字的左子树中的所有关键字都小于它，而右子树中的所有关键字都大于它。</p>
+</li>
+<li><p>所有叶子节点都位于同一层，或者说根节点到每个叶子节点的长度都相同。</p>
+</li>
+<li><p>每个节点都存有索引和数据，也就是对应的key和value。</p>
+</li>
+</ul>
+<h4 id="插入"><a href="#插入" class="headerlink" title="插入"></a>插入</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line">// 1、2、3、4、5、6、12、11、10、9、8、7 （5阶B树）</span><br><span class="line">1</span><br><span class="line"></span><br><span class="line">1 2</span><br><span class="line"></span><br><span class="line">1 2 3</span><br><span class="line"></span><br><span class="line">1 2 3 4  5    -&gt;         3            // 个数超过（5-1）结点分裂</span><br><span class="line">                      /     \</span><br><span class="line">                   1  2     4 5</span><br><span class="line"></span><br><span class="line">        3</span><br><span class="line">     /    \</span><br><span class="line"> 1 2     4 5 6</span><br><span class="line"> </span><br><span class="line">       3</span><br><span class="line">     /    \</span><br><span class="line"> 1 2     4 5 6 12</span><br><span class="line"> </span><br><span class="line">        3                                    3     6</span><br><span class="line">     /     \                -&gt;            /     |     \</span><br><span class="line"> 1 2     4 5 6 11 12                  1 2      4 5    11 12</span><br><span class="line"> </span><br><span class="line">      3    6</span><br><span class="line">   /    |     \</span><br><span class="line"> 1 2   4 5    10 11 12 </span><br><span class="line"> </span><br><span class="line">      3   6</span><br><span class="line">   /    |    \</span><br><span class="line"> 1 2   4 5    9 10 11 12 </span><br><span class="line"> </span><br><span class="line">     3    6                                   3     6   10</span><br><span class="line">   /    |    \                -&gt;            /    |    |    \</span><br><span class="line"> 1 2   4 5    8 9 10 11 12             1 2   4 5   8 9    11 12</span><br><span class="line"> </span><br><span class="line">      3    6   10</span><br><span class="line">  /    |     |    \</span><br><span class="line">1 2   4 5   7 8 9  11 12 </span><br></pre></td></tr></table></figure>
+
+<p>B树的插入相对简单，就是不断向结点插入关键字，直到结点关键字溢出然后进行分裂就行，B树很明显的特点就是“矮”，意味着它可以在较小的时间复杂度内查询到结果。</p>
+<h3 id="B-树"><a href="#B-树" class="headerlink" title="B+树"></a>B+树</h3><p>B+树其实和B树是非常相似，根结点至少一个元素，n阶B+树非根节点元素数量范围为n/2 &lt;= k &lt;= n-1。B+树也有其独特的性质：</p>
+<ul>
+<li><p>B+树有两种类型的节点：内部结点（也称索引结点）和叶子结点。内部节点就是非叶子节点，内部节点不存储数据，只存储索引，数据都存储在叶子节点。</p>
+</li>
+<li><p>内部结点中的key都按照从小到大的顺序排列，对于内部结点中的一个key，左树中的所有key都小于它，右子树中的key都大于等于它。叶子结点中的记录也按照key的大小排列。</p>
+</li>
+<li><p>每个叶子结点都存有相邻叶子结点的指针，叶子结点本身依关键字的大小自小而大顺序链接。</p>
+</li>
+<li><p>父节点存有右孩子的第一个元素的索引。</p>
+</li>
+</ul>
+<p>B+树的插入操作和B树和相似，只不过分裂时可能会有存在复制结点的情况（生成一个索引结点）</p>
+<h3 id="插入操作-1"><a href="#插入操作-1" class="headerlink" title="插入操作"></a>插入操作</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line">// 1、2、3、4、5、6、12、11、10、9、8、7 （5阶B+树）</span><br><span class="line">1</span><br><span class="line"></span><br><span class="line">1 2</span><br><span class="line"></span><br><span class="line">1 2 3</span><br><span class="line"></span><br><span class="line">1 2 3 4 5   -&gt;         3            // 个数超过（5-1）结点分裂，注意这里是结点复制而</span><br><span class="line">                    /     \         //  不是简单结点上移</span><br><span class="line">                 1 2   - 3 4 5</span><br><span class="line"></span><br><span class="line">        3</span><br><span class="line">     /     \</span><br><span class="line"> 1 2   -  3 4 5 6</span><br><span class="line"> </span><br><span class="line">       3                                 3     5</span><br><span class="line">     /    \            -&gt;              /    |   \</span><br><span class="line"> 1 2   - 3 4 5 6 12                1 2 - 3 4 - 5 6 12</span><br><span class="line"> </span><br><span class="line">        3     5            </span><br><span class="line">     /     |     \            </span><br><span class="line"> 1 2  -  3 4  - 5 6 11 12    </span><br><span class="line"> </span><br><span class="line">        3    5                          3   5   10</span><br><span class="line">     /    |     \                -&gt;   /   |    |   \</span><br><span class="line"> 1 2  -  3 4  - 5 6 10 11 12        1 2 - 3 4 - 5 6 - 10 11 12</span><br><span class="line"> </span><br><span class="line">       3     5    10</span><br><span class="line">    /     |     |      \</span><br><span class="line">1 2   -  3 4 - 5 6 9 - 10 11 12</span><br><span class="line"></span><br><span class="line">      3     5    10</span><br><span class="line">   /     |     |      \</span><br><span class="line">1 2  -  3 4 - 5 6 8 9 - 10 11 12</span><br><span class="line"></span><br><span class="line">       3     5      10                            3     5      7      10   </span><br><span class="line">   /     |      |        \            -&gt;       /     |      |      |       \</span><br><span class="line">1 2   -  3 4 - 5 6 7 8 9 - 10 11 12        1 2 - 3 4  - 5 6  - 7 8 9 - 10 11 12</span><br></pre></td></tr></table></figure>
+
+<h3 id="B树和B-树总结"><a href="#B树和B-树总结" class="headerlink" title="B树和B+树总结"></a>B树和B+树总结</h3><p>B+树相对于B树有一些自己的优势，可以归结为下面几点。</p>
+<ul>
+<li>单一节点存储的元素更多，使得查询的IO次数更少，所以也就使得它更适合做为数据库MySQL的底层数据结构了。</li>
+<li>所有的查询都要查找到叶子节点，查询性能是稳定的，而B树，每个节点都可以查找到数据，所以不稳定。</li>
+<li>所有的叶子节点形成了一个有序链表，更加便于查找。</li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2022/02/10/C-%E4%B8%AD%E7%9A%84%E6%99%BA%E8%83%BD%E6%8C%87%E9%92%88/" rel="prev" title="C++中的智能指针">
+      <i class="fa fa-chevron-left"></i> C++中的智能指针
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%AD%E7%9A%84%E5%90%84%E7%A7%8D%E6%A0%91"><span class="nav-number">1.</span> <span class="nav-text">数据结构中的各种树</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#BST%E5%92%8CAVL%E6%A0%91"><span class="nav-number">1.1.</span> <span class="nav-text">BST和AVL树</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#BST"><span class="nav-number">1.1.1.</span> <span class="nav-text">BST</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#AVL%E6%A0%91"><span class="nav-number">1.1.2.</span> <span class="nav-text">AVL树</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BA%A2%E9%BB%91%E6%A0%91"><span class="nav-number">1.2.</span> <span class="nav-text">红黑树</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BA%A2%E9%BB%91%E6%A0%91%E7%9A%84%E6%80%A7%E8%B4%A8"><span class="nav-number">1.2.1.</span> <span class="nav-text">红黑树的性质</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%97%8B%E8%BD%AC%E6%93%8D%E4%BD%9C"><span class="nav-number">1.2.2.</span> <span class="nav-text">旋转操作</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%8F%92%E5%85%A5%E6%93%8D%E4%BD%9C"><span class="nav-number">1.2.3.</span> <span class="nav-text">插入操作</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%83%85%E5%86%B51"><span class="nav-number">1.2.3.1.</span> <span class="nav-text">情况1</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%83%85%E5%86%B52"><span class="nav-number">1.2.3.2.</span> <span class="nav-text">情况2</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%83%85%E5%86%B53"><span class="nav-number">1.2.3.3.</span> <span class="nav-text">情况3</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%83%85%E5%86%B54"><span class="nav-number">1.2.3.4.</span> <span class="nav-text">情况4</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#B%E6%A0%91B-%E6%A0%91"><span class="nav-number">1.3.</span> <span class="nav-text">B树B+树</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#B%E6%A0%91"><span class="nav-number">1.3.1.</span> <span class="nav-text">B树</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%8F%92%E5%85%A5"><span class="nav-number">1.3.1.1.</span> <span class="nav-text">插入</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#B-%E6%A0%91"><span class="nav-number">1.3.2.</span> <span class="nav-text">B+树</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%8F%92%E5%85%A5%E6%93%8D%E4%BD%9C-1"><span class="nav-number">1.3.3.</span> <span class="nav-text">插入操作</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#B%E6%A0%91%E5%92%8CB-%E6%A0%91%E6%80%BB%E7%BB%93"><span class="nav-number">1.3.4.</span> <span class="nav-text">B树和B+树总结</span></a></li></ol></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Ryu</p>
+  <div class="site-description" itemprop="description">十年饮冰，难凉热血</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">6</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/Ryu-5973" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;Ryu-5973" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/2529745278@qq.com" title="E-Mail → 2529745278@qq.com"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://blog.csdn.net/Chris_Eddy" title="CSDN → https:&#x2F;&#x2F;blog.csdn.net&#x2F;Chris_Eddy" rel="noopener" target="_blank"><i class="fab fa-code fa-fw"></i>CSDN</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Ryu</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  
+  <script color='0,0,255' opacity='0.5' zIndex='-1' count='99' src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

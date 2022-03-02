@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.0.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/web-icon32.svg">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/web-icon16.svg">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="C++ 函数修饰符，限定符，说明符总结随着C++版本的不断迭代，C++中的修饰符也不断增加，这里对C++中的修饰符，限定符，说明符做一个总结。  我们逐一讲解 inline将函数前面加上inline是作用是向编译器发出一个请求，令该函数为内联函数，所谓的内联函数通常就是将它在每个调用点上“内联地”展开，内联函数可避免函数调用的开销，但编译器可以忽略这个请求。 一般来说，内联机制用于优化规模较小、流">
+<meta property="og:type" content="article">
+<meta property="og:title" content="C++ 函数修饰符，限定符，说明符总结">
+<meta property="og:url" content="http://example.com/2022/02/09/C-%E5%87%BD%E6%95%B0%E4%BF%AE%E9%A5%B0%E7%AC%A6%EF%BC%8C%E9%99%90%E5%AE%9A%E7%AC%A6%EF%BC%8C%E8%AF%B4%E6%98%8E%E7%AC%A6%E6%80%BB%E7%BB%93/index.html">
+<meta property="og:site_name" content="RyusBlog">
+<meta property="og:description" content="C++ 函数修饰符，限定符，说明符总结随着C++版本的不断迭代，C++中的修饰符也不断增加，这里对C++中的修饰符，限定符，说明符做一个总结。  我们逐一讲解 inline将函数前面加上inline是作用是向编译器发出一个请求，令该函数为内联函数，所谓的内联函数通常就是将它在每个调用点上“内联地”展开，内联函数可避免函数调用的开销，但编译器可以忽略这个请求。 一般来说，内联机制用于优化规模较小、流">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/images/2/1.png">
+<meta property="article:published_time" content="2022-02-08T16:12:40.000Z">
+<meta property="article:modified_time" content="2022-02-09T14:54:56.324Z">
+<meta property="article:author" content="Ryu">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/images/2/1.png">
+
+<link rel="canonical" href="http://example.com/2022/02/09/C-%E5%87%BD%E6%95%B0%E4%BF%AE%E9%A5%B0%E7%AC%A6%EF%BC%8C%E9%99%90%E5%AE%9A%E7%AC%A6%EF%BC%8C%E8%AF%B4%E6%98%8E%E7%AC%A6%E6%80%BB%E7%BB%93/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>C++ 函数修饰符，限定符，说明符总结 | RyusBlog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">RyusBlog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2022/02/09/C-%E5%87%BD%E6%95%B0%E4%BF%AE%E9%A5%B0%E7%AC%A6%EF%BC%8C%E9%99%90%E5%AE%9A%E7%AC%A6%EF%BC%8C%E8%AF%B4%E6%98%8E%E7%AC%A6%E6%80%BB%E7%BB%93/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Ryu">
+      <meta itemprop="description" content="十年饮冰，难凉热血">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="RyusBlog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          C++ 函数修饰符，限定符，说明符总结
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2022-02-09 00:12:40 / 修改时间：22:54:56" itemprop="dateCreated datePublished" datetime="2022-02-09T00:12:40+08:00">2022-02-09</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="C-函数修饰符，限定符，说明符总结"><a href="#C-函数修饰符，限定符，说明符总结" class="headerlink" title="C++ 函数修饰符，限定符，说明符总结"></a>C++ 函数修饰符，限定符，说明符总结</h1><p>随着C++版本的不断迭代，C++中的修饰符也不断增加，这里对C++中的修饰符，限定符，说明符做一个总结。</p>
+<p><img src="/images/2/1.png"></p>
+<p>我们逐一讲解</p>
+<h3 id="inline"><a href="#inline" class="headerlink" title="inline"></a>inline</h3><p>将函数前面加上<strong>inline</strong>是作用是向编译器发出一个请求，令该函数为<strong>内联函数</strong>，所谓的<strong>内联函数</strong>通常就是将它在每个调用点上“内联地”展开，内联函数可避免函数调用的开销，但编译器可以忽略这个请求。</p>
+<p>一般来说，内联机制用于优化规模较小、流程直接、频繁调用的函数。很多编译器都不支持内联递归函数。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 寻找两个string对象中较短的那个的内联函数版本</span></span><br><span class="line"><span class="function"><span class="keyword">inline</span> <span class="keyword">const</span> string&amp;</span></span><br><span class="line"><span class="function"><span class="title">shorterString</span><span class="params">(<span class="keyword">const</span> string &amp;s1, <span class="keyword">const</span> string &amp;s2)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> s1.<span class="built_in">size</span>() &lt;= s2.<span class="built_in">size</span>() ? s1 : s2;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="constexpr"><a href="#constexpr" class="headerlink" title="constexpr"></a>constexpr</h3><p>在讲<strong>constexpr函数</strong>前先来讲一下<strong>constexpr常量</strong>。</p>
+<p><strong>C++11新标准</strong>规定，允许将变量声明为<strong>constexpr</strong>类型以便由编译器来验证变量的值是否是一个常量表达式。声明为<strong>constexpr</strong>的变量一定是一个常量，且必须用常量表达式初始化。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">constexpr</span> <span class="keyword">int</span> mf = <span class="number">20</span>;</span><br><span class="line"><span class="keyword">constexpr</span> <span class="keyword">int</span> limit = mf + <span class="number">1</span>;</span><br><span class="line"><span class="keyword">constexpr</span> <span class="keyword">int</span> sz = <span class="built_in">size</span>();		<span class="comment">// 只有当size是一个constexpr函数时才是一条正确的声明语句</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>constexpr函数</strong>足够简单以使得编译时就可以计算其结果，这样就能用<strong>constexpr函数</strong>去初始化<strong>constexpr变量</strong>了。一般来说，如果你认为变量是一个常量表达式，那就把他声明成<strong>constexpr</strong>类型。</p>
+<p>下面讲一下<strong>constexpr函数</strong>。</p>
+<p>**constexpr函数(constexpr function)**是指能用于常量表达式的函数。定义constexpr函数的方法和其它函数类似，不过要准许几项约定：函数的返回类型及所有形参的类型都得是字面值类型，而且函数体中必须有且只有一条return语句：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">constexpr</span> <span class="keyword">int</span> <span class="title">new_sz</span><span class="params">()</span></span>&#123;<span class="keyword">return</span> <span class="number">42</span>;&#125;</span><br><span class="line"><span class="keyword">constexpr</span> <span class="keyword">int</span> foo = <span class="built_in">new_sz</span>();	<span class="comment">// 正确：foo是一个常量表达式</span></span><br></pre></td></tr></table></figure>
+
+<p>执行该初始化任务时，编译器把 对<strong>constexpr函数</strong>的调用换成其结果值。为了能在编译过程随时展开，<strong>constexpr函数</strong>被隐式地定为内联函数。</p>
+<p><strong>constexpr函数体</strong>内也可以包含其它语句，只要这些语句在运行时不执行任何操作就行。例如，<strong>constexpr函数</strong>中可以有<strong>空语句</strong>、<strong>类型别名</strong>以及<strong>using声明</strong>。</p>
+<p>我们允许<strong>constexpr函数</strong>的返回值并非一个常量：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 如果arg是常量表达式，则scale(arg)也是常量表达式</span></span><br><span class="line"><span class="function"><span class="keyword">constexpr</span> <span class="keyword">size_t</span> <span class="title">scale</span><span class="params">(<span class="keyword">size_t</span> cnt)</span></span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">new_sz</span>() * cnt;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>当scale的实参是常量表达式时，它的返回值也是常量表达式，反之则不然</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> arr[<span class="built_in">scale</span>(<span class="number">2</span>)];		<span class="comment">// 正确，scale(2)是常量表达式</span></span><br><span class="line"><span class="keyword">int</span> i = <span class="number">2</span>;				<span class="comment">// i不是常量表达式</span></span><br><span class="line"><span class="keyword">int</span> a2[<span class="built_in">scale</span>(i)];		<span class="comment">// 错误：scale[i]不是常量表达式</span></span><br></pre></td></tr></table></figure>
+
+<p>所以<strong>constexpr函数</strong>不一定返回常量表达式。</p>
+<h3 id="virtual"><a href="#virtual" class="headerlink" title="virtual"></a>virtual</h3><p>修饰基类的成员函数使其成为虚函数实现动态绑定，当我们在派生类中覆盖了某个虚函数时，可以再使用一次virtual关键字指出该函数的性质。然而这么做并非必须，因为一旦某个函数被声明成虚函数，则在所有派生类中它都是虚函数。</p>
+<p>一个派生类的函数如果覆盖率某个继承而来的虚函数，则它的形参类型必须与被它覆盖的基类函数完全一致。</p>
+<p>同样，派生类中虚函数的返回类型也必须与基类函数匹配。该规则存在一个例外，当类的虚函数返回类型是类本身的指针或引用时，上述规则无效。也就是说，如果D由B派生得到，则基类的虚函数可以返回B*而派生类的对应函数可以返回D*，只不过这样的返回类型要求从D到B是可访问的。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">Base</span>&#123;</span></span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> Base* <span class="title">foo</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        std::cout &lt;&lt; <span class="string">&quot;Base virtual foo&quot;</span> &lt;&lt; std::endl;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">this</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Driver</span> :</span> <span class="keyword">public</span> Base&#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function">Driver* <span class="title">foo</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        std::cout &lt;&lt; <span class="string">&quot;Driver virtual foo&quot;</span> &lt;&lt; std::endl;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">this</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">Base *pbase = <span class="keyword">new</span> Base;</span><br><span class="line">pbase-&gt;<span class="built_in">foo</span>();	<span class="comment">// Base virtual foo</span></span><br><span class="line">Driver *pdriver = <span class="keyword">new</span> <span class="built_in">Driver</span>();</span><br><span class="line"><span class="built_in">free</span>(pbase);</span><br><span class="line">pbase = pdriver;</span><br><span class="line">pbase-&gt;<span class="built_in">foo</span>();	<span class="comment">// Driver virtual foo</span></span><br><span class="line"><span class="built_in">free</span>(pbase);</span><br></pre></td></tr></table></figure>
+
+<h3 id="0"><a href="#0" class="headerlink" title="=0"></a>=0</h3><p>在虚函数的声明后面加上**’=0’<strong>后，该函数变成纯虚函数，该类就变成</strong>抽象基类<strong>。一个纯虚函数无需定义。其中，</strong>‘=0’**只能出现在类内部的虚函数声明语句处：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">Base</span>&#123;</span></span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> Base* <span class="title">foo</span><span class="params">()</span> </span>= <span class="number">0</span>;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="function">Base* <span class="title">Base::foo</span><span class="params">()</span> </span>&#123; <span class="comment">// unused</span></span><br><span class="line">    std::cout &lt;&lt; <span class="string">&quot;Base virtual foo&quot;</span> &lt;&lt; std::endl;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">this</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Driver</span> :</span> <span class="keyword">public</span> Base&#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function">Driver* <span class="title">foo</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        std::cout &lt;&lt; <span class="string">&quot;Driver virtual foo&quot;</span> &lt;&lt; std::endl;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">this</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Driver *pdriver = <span class="keyword">new</span> <span class="built_in">Driver</span>();</span><br><span class="line">pdriver-&gt;<span class="built_in">foo</span>();		<span class="comment">// Driver virtual foo</span></span><br><span class="line">Base  *pbase = pdriver;</span><br><span class="line">pbase-&gt;<span class="built_in">foo</span>();		<span class="comment">// Driver virtual foo</span></span><br><span class="line"><span class="built_in">free</span>(pbase);</span><br></pre></td></tr></table></figure>
+
+<p>值得注意的是，我们也可以为纯虚函数提供定义，不过函数体必须定义在类的外部。也就是说，我们不能在类的内部为一个<strong>‘=0’</strong>的函数提供函数体。</p>
+<p>含有（或者未经覆盖直接继承）虚函数的类是抽象基类。抽象基类负责定义接口，而后续的其他类可以覆盖该接口。我们不能（直接）创建一个抽象基类的对象。</p>
+<h3 id="override"><a href="#override" class="headerlink" title="override"></a>override</h3><p>在C++11新标准中我们可以使用override关键字来说明派生类中的虚函数。这么做的好处是使得程序员的意图更加清晰的同时让编译器可以为我们发现一些错误，后者在编程实现中显得更加重要。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">B</span>&#123;</span></span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="keyword">void</span> <span class="title">f1</span><span class="params">(<span class="keyword">int</span>)</span><span class="keyword">const</span></span>;</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="keyword">void</span> <span class="title">f2</span><span class="params">()</span></span>;</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">f3</span><span class="params">()</span></span>;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">D1</span> :</span> B&#123;</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">f1</span><span class="params">(<span class="keyword">int</span>)</span> <span class="keyword">const</span> <span class="keyword">override</span></span>;	<span class="comment">// 正确</span></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">f2</span><span class="params">(<span class="keyword">int</span>)</span> <span class="keyword">override</span></span>;			<span class="comment">// 错误</span></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">f3</span><span class="params">()</span> <span class="keyword">override</span></span>;				<span class="comment">// 错误</span></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">f4</span><span class="params">()</span> <span class="keyword">override</span></span>;				<span class="comment">// 错误</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<h3 id="final"><a href="#final" class="headerlink" title="final"></a>final</h3><p>我们还能把某个函数指定为final，如果我们已经把函数定义成final了，则之后任何尝试覆盖该函数的操作都将引发错误：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">D2</span> :</span> B&#123;</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">f1</span><span class="params">(<span class="keyword">int</span>)</span> <span class="keyword">const</span> <span class="keyword">final</span></span>;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">D3</span> :</span> D2&#123;</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">f1</span><span class="params">()</span></span>;			<span class="comment">// 重载</span></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">f1</span><span class="params">(<span class="keyword">int</span>)</span> <span class="keyword">const</span></span>;	<span class="comment">// 错误</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<h3 id="void-foo"><a href="#void-foo" class="headerlink" title="void foo()"></a>void foo()</h3><p>函数返回值、函数名</p>
+<h3 id="amp-amp-amp"><a href="#amp-amp-amp" class="headerlink" title="&amp; / &amp;&amp;"></a>&amp; / &amp;&amp;</h3><p><code>C++11</code>新增特性，当 **’&amp;’**修饰成员函数时，只有左值对象能调用该函数；当 <strong>‘&amp;&amp;’</strong> 修饰成员函数时，只有右值对象能调用该函数</p>
+<h3 id="noexcept"><a href="#noexcept" class="headerlink" title="noexcept"></a>noexcept</h3><p><code>C++11</code>新增特性，强制编译器检查该函数是否覆盖已存在的虚函数，如果没有覆盖则报错。如果声明为<strong>noexcept</strong>后函数仍然<strong>throw exception</strong>，程序就会调用<strong>terminate</strong>以确保遵守不在运行抛出异常的承诺。上述过程对是否执行栈展开未作约定，因此<strong>noexcept</strong>可以用在两种情况下：</p>
+<ul>
+<li>我们确认函数不会抛出异常</li>
+<li>我们根本不知道如何处理异常</li>
+</ul>
+<p>指明某个函数不会抛出异常可以令该函数的调用者不必再考虑如何处理异常。无论是函数确实不抛出异常，还是程序被终止，调用者都无须为此负责。</p>
+<h3 id="try-catch-…"><a href="#try-catch-…" class="headerlink" title="try{}catch(…){}"></a>try{}catch(…){}</h3><p>函数 <code>try</code> 语句块 一般用在构造函数。构造函数在进入函数体之前先执行初始值列表，在初始值列表抛出异常时，构造函数内的<code>try</code>语句块无法生效。所以要想处理构造函数初始值抛出的异常，我们必须将构造函数写成函数<code>try</code>语句块。</p>
+<p><em>虽然但是，构造函数中尽量不要抛出异常，能避免的就避免，如果必须，要考虑不要内存泄露！</em></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2022/02/06/%E6%B5%85%E8%B0%88C-%E4%B8%AD%E7%9A%84%E5%B7%A6%E5%8F%B3%E5%80%BC%E5%8F%8A%E5%85%B6%E5%BC%95%E7%94%A8/" rel="prev" title="浅谈C++中的左右值及其引用">
+      <i class="fa fa-chevron-left"></i> 浅谈C++中的左右值及其引用
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2022/02/09/%E9%80%9A%E8%BF%87%E5%A4%9A%E4%B8%AA%E8%BF%9B%E7%A8%8B%E6%B1%82%E7%B4%A0%E6%95%B0/" rel="next" title="通过多个进程求素数">
+      通过多个进程求素数 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#C-%E5%87%BD%E6%95%B0%E4%BF%AE%E9%A5%B0%E7%AC%A6%EF%BC%8C%E9%99%90%E5%AE%9A%E7%AC%A6%EF%BC%8C%E8%AF%B4%E6%98%8E%E7%AC%A6%E6%80%BB%E7%BB%93"><span class="nav-number">1.</span> <span class="nav-text">C++ 函数修饰符，限定符，说明符总结</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#inline"><span class="nav-number">1.0.1.</span> <span class="nav-text">inline</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#constexpr"><span class="nav-number">1.0.2.</span> <span class="nav-text">constexpr</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#virtual"><span class="nav-number">1.0.3.</span> <span class="nav-text">virtual</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#0"><span class="nav-number">1.0.4.</span> <span class="nav-text">&#x3D;0</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#override"><span class="nav-number">1.0.5.</span> <span class="nav-text">override</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#final"><span class="nav-number">1.0.6.</span> <span class="nav-text">final</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#void-foo"><span class="nav-number">1.0.7.</span> <span class="nav-text">void foo()</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#amp-amp-amp"><span class="nav-number">1.0.8.</span> <span class="nav-text">&amp; &#x2F; &amp;&amp;</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#noexcept"><span class="nav-number">1.0.9.</span> <span class="nav-text">noexcept</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#try-catch-%E2%80%A6"><span class="nav-number">1.0.10.</span> <span class="nav-text">try{}catch(…){}</span></a></li></ol></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Ryu</p>
+  <div class="site-description" itemprop="description">十年饮冰，难凉热血</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">6</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/Ryu-5973" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;Ryu-5973" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/2529745278@qq.com" title="E-Mail → 2529745278@qq.com"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://blog.csdn.net/Chris_Eddy" title="CSDN → https:&#x2F;&#x2F;blog.csdn.net&#x2F;Chris_Eddy" rel="noopener" target="_blank"><i class="fab fa-code fa-fw"></i>CSDN</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Ryu</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  
+  <script color='0,0,255' opacity='0.5' zIndex='-1' count='99' src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>
